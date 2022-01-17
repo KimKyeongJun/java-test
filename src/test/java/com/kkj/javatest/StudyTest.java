@@ -1,12 +1,17 @@
 package com.kkj.javatest;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl;
 
 import java.time.Duration;
 import java.util.function.Supplier;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 
 // UnderScore를 공백으로 치환
@@ -16,11 +21,25 @@ class StudyTest {
 
     @Test
     @DisplayName("스터디 만들기")
+    @EnabledOnOs(OS.MAC)
     void create_new_study() {
-        assertTimeout(Duration.ofMillis(100),()-> {
-            new Study(10);
-            Thread.sleep(300);
+        String test_env = System.getenv("TEST_ENV");
+        System.out.println(test_env);
+        assumeTrue("LOCAL".equalsIgnoreCase(System.getenv("TEST_ENV")));
+
+        assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
+            System.out.println("local");
+            Study actual = new Study(10);
+            assertThat(actual.getLimit()).isGreaterThan(0);
         });
+
+        Study actual = new Study(10);
+        assertThat(actual.getLimit()).isGreaterThan(0);
+
+//        assertTimeout(Duration.ofMillis(100),()-> {
+//            new Study(10);
+//            Thread.sleep(300);
+//        });
 
 
 //        Study study = new Study(-10);
@@ -38,6 +57,7 @@ class StudyTest {
     }
 
     @Test
+    @EnabledOnOs(OS.WINDOWS)
     void create_new_study_again() {
         System.out.println("create1");
     }
