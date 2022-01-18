@@ -19,10 +19,9 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 class StudyTest {
 
 
-    @Test
     @DisplayName("스터디 만들기")
 //    @EnabledOnOs(OS.MAC)
-    @Tag("fast")
+    @FastTest
     void create_new_study() {
 //        String test_env = System.getenv("TEST_ENV");
 //        System.out.println(test_env);
