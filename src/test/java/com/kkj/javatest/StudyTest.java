@@ -21,19 +21,21 @@ class StudyTest {
 
     @Test
     @DisplayName("스터디 만들기")
-    @EnabledOnOs(OS.MAC)
+//    @EnabledOnOs(OS.MAC)
+    @Tag("fast")
     void create_new_study() {
-        String test_env = System.getenv("TEST_ENV");
-        System.out.println(test_env);
-        assumeTrue("LOCAL".equalsIgnoreCase(System.getenv("TEST_ENV")));
-
-        assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
-            System.out.println("local");
-            Study actual = new Study(10);
-            assertThat(actual.getLimit()).isGreaterThan(0);
-        });
+//        String test_env = System.getenv("TEST_ENV");
+//        System.out.println(test_env);
+//        assumeTrue("LOCAL".equalsIgnoreCase(System.getenv("TEST_ENV")));
+//
+//        assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
+//            System.out.println("local");
+//            Study actual = new Study(10);
+//            assertThat(actual.getLimit()).isGreaterThan(0);
+//        });ㅔ
 
         Study actual = new Study(10);
+        System.out.println("Fast 실행");
         assertThat(actual.getLimit()).isGreaterThan(0);
 
 //        assertTimeout(Duration.ofMillis(100),()-> {
@@ -58,6 +60,7 @@ class StudyTest {
 
     @Test
     @EnabledOnOs(OS.WINDOWS)
+    @Tag("slow")
     void create_new_study_again() {
         System.out.println("create1");
     }
