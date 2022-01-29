@@ -19,6 +19,9 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StudyServiceTest {
@@ -35,6 +38,11 @@ class StudyServiceTest {
             @Override
             public Optional<Member> findById(Long memberId) {
                 return Optional.empty();
+            }
+
+            @Override
+            public void validate(Long memberId) {
+
             }
         };
 
@@ -209,6 +217,59 @@ class StudyServiceTest {
     void createStudyServiceUseAnnotationWithMethodParameter(@Mock MemberService memberService, @Mock StudyRepository studyRepository) {
         StudyService studyService = new StudyService(memberService, studyRepository);
         assertNotNull(studyService);
+    }
+
+    @Test
+    void createStudyServiceStubbing(@Mock MemberService memberService, @Mock StudyRepository studyRepository) {
+        StudyService studyService = new StudyService(memberService, studyRepository);
+        assertNotNull(studyService);
+
+        Member member = new Member();
+        member.setId(1L);
+        member.setEmail("v49011591@gmail.com");
+
+        when(memberService.findById(1L)).thenReturn(Optional.of(member));
+
+
+
+        Optional<Member> optional = memberService.findById(1L);
+        assertEquals("v49011591@gmail.com", optional.get().getEmail());
+
+        // 1을 넣었을때 Exception 발생
+        doThrow(new IllegalArgumentException()).when(memberService).validate(1L);
+        assertThrows(IllegalArgumentException.class, () -> {
+            memberService.validate(1L);
+        });
+
+        memberService.validate(2L);
+
+//        Study study = new Study(10, "Java");
+//        studyService.createNewStudy(1L, study);
+
+    }
+
+    @Test
+    void createStudyServiceStubbingSameArgumentDiffBahavior(@Mock MemberService memberService, @Mock StudyRepository studyRepository) {
+        StudyService studyService = new StudyService(memberService, studyRepository);
+        assertNotNull(studyService);
+
+        Member member = new Member();
+        member.setId(1L);
+        member.setEmail("v49011591@gmail.com");
+
+        when(memberService.findById(any()))
+                .thenReturn(Optional.of(member))
+                .thenThrow(new RuntimeException())
+                .thenReturn(Optional.empty());
+
+        Optional<Member> optional = memberService.findById(1L);
+        assertEquals("v49011591@gmail.com", optional.get().getEmail());
+        assertThrows(RuntimeException.class, () -> {
+            memberService.findById(2L);
+        });
+
+        assertEquals(Optional.empty(), memberService.findById(3L));
+
     }
 
 }
