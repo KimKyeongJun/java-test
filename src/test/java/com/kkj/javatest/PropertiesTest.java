@@ -1,5 +1,6 @@
 package com.kkj.javatest;
 
+import com.kkj.javatest.member.Study;
 import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;

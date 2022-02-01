@@ -1,8 +1,7 @@
 package com.kkj.javatest;
 
+import com.kkj.javatest.member.Study;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 

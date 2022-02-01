@@ -1,15 +1,11 @@
 package com.kkj.javatest;
 
+import com.kkj.javatest.member.Study;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
-import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl;
-
-import java.time.Duration;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 

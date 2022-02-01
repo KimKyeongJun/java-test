@@ -1,5 +1,6 @@
 package com.kkj.javatest;
 
+import com.kkj.javatest.member.Study;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
