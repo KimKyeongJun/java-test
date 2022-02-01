@@ -20,7 +20,6 @@ public class Study {
     private int limitCount;
     private String name;
     private LocalDateTime openedDateTime;
-    private Long ownerId;
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private Member owner;

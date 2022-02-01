@@ -14,7 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -35,6 +40,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ActiveProfiles("test")
 @Testcontainers
 @Slf4j
+@ContextConfiguration(initializers = StudyServiceContainerTest.ContainerPropertyInitializer.class)
 class StudyServiceContainerTest {
 
     @Mock
@@ -42,6 +48,9 @@ class StudyServiceContainerTest {
 
     @Autowired
     private StudyRepository studyRepository;
+
+    @Autowired
+    Environment environment;
 
     @Container
     static GenericContainer postgreSQLContainer = new GenericContainer("postgres")
@@ -61,6 +70,7 @@ class StudyServiceContainerTest {
         System.out.println("================");
         System.out.println(postgreSQLContainer.getMappedPort(5432));
         System.out.println(postgreSQLContainer.getLogs());
+        System.out.println(environment.getProperty("container.port"));
         studyRepository.deleteAll();
     }
 
@@ -73,18 +83,27 @@ class StudyServiceContainerTest {
         member.setId(1L);
         member.setEmail("v49011591@gmail.com");
 
-        Study  study = new Study(10, "테스트");
+        Study study = new Study(10, "테스트");
 
 
-        given(memberService.findById(1L)).willReturn(Optional.of(member));
-        given(studyRepository.save(study)).willReturn(study);
+//        given(memberService.findById(1L)).willReturn(Optional.of(member));
+////        given(studyRepository.save(study)).willReturn(study);
+//
+//        studyService.createNewStudy(1L, study);
+//        assertEquals(member, study.getOwner());
+//
+//        then(memberService).should(times(1)).notify(member);
+//        then(memberService).shouldHaveNoMoreInteractions();
 
-        studyService.createNewStudy(1L, study);
-        assertEquals(member, study.getOwner());
+    }
 
-       then(memberService).should(times(1)).notify(member);
-       then(memberService).shouldHaveNoMoreInteractions();
+    static class ContainerPropertyInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+        @Override
+        public void initialize(ConfigurableApplicationContext context) {
+            TestPropertyValues.of("container.port=" + postgreSQLContainer.getMappedPort(5432))
+                    .applyTo(context.getEnvironment());
+        }
     }
 
 }
