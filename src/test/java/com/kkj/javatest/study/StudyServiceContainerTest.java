@@ -3,16 +3,23 @@ package com.kkj.javatest.study;
 import com.kkj.javatest.domain.Member;
 import com.kkj.javatest.domain.Study;
 import com.kkj.javatest.member.MemberService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.logging.LoggerFactory;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
@@ -26,6 +33,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
+@Testcontainers
+@Slf4j
 class StudyServiceContainerTest {
 
     @Mock
@@ -34,16 +43,25 @@ class StudyServiceContainerTest {
     @Autowired
     private StudyRepository studyRepository;
 
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer().withDatabaseName("studytest");
+    @Container
+    static GenericContainer postgreSQLContainer = new GenericContainer("postgres")
+            .withExposedPorts(5432)
+            .withEnv("POSTGRES_DB", "studytest")
+            .withEnv("POSTGRES_HOST_AUTH_METHOD", "trust")
+            .waitingFor(Wait.forListeningPort());
 
     @BeforeAll
     static void beforeAll() {
-        postgreSQLContainer.start();
+        Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(log);
+        postgreSQLContainer.followOutput(logConsumer);
     }
 
-    @AfterAll()
-    static void afterAll() {
-        postgreSQLContainer.stop();
+    @BeforeEach
+    void beforeEach() {
+        System.out.println("================");
+        System.out.println(postgreSQLContainer.getMappedPort(5432));
+        System.out.println(postgreSQLContainer.getLogs());
+        studyRepository.deleteAll();
     }
 
     @Test
